@@ -3,13 +3,15 @@ import processing.core.*;
 public class Player implements Drawable{
     Tank tank;
     PApplet app;
+    Game game;
     //W = 0, S = 1, A =2, D =3
     //J = 4, K = 5 ' ' = 6
     boolean[] keyInputs;
-    Player(float x, float y, int deg, PApplet app){
+    Player(float x, float y, int deg, PApplet app, Game game){
         keyInputs = new boolean[7];
         this.app = app;
         tank = new Tank(x,y,deg,app);
+        this.game = game;
     }
 
     public void draw(){
@@ -79,7 +81,12 @@ public class Player implements Drawable{
         }
         //' '
         if (keyInputs[6]){
-            tank.fire();
+            game.spawnBullet(tank.fire());
         }
     }
+
+    public Tank getTank(){
+        return tank;
+    }
+
 }

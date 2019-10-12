@@ -20,9 +20,9 @@ public abstract class Rotateable {
 
     private void rotationFloor(){
         if(rotation > 360){
-            rotation = 0;
+            rotation -= 360;
         }else if(rotation < 0){
-            rotation = 360;
+            rotation += 360;
         }
     }
 }
