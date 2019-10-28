@@ -2,21 +2,19 @@ import processing.core.*;
 
 public class Player implements Drawable{
     Tank tank;
-    PApplet app;
     Game game;
     //W = 0, S = 1, A =2, D =3
     //J = 4, K = 5 ' ' = 6
     boolean[] keyInputs;
-    Player(float x, float y, int deg, PApplet app, Game game){
+    Player(float x, float y, int deg, Game game){
         keyInputs = new boolean[7];
-        this.app = app;
-        tank = new Tank(x,y,deg,app);
+        tank = new Tank(x,y,deg);
         this.game = game;
     }
 
-    public void draw(){
+    public void draw(PApplet applet){
         update();
-        tank.draw();
+        tank.draw(applet);
     }
 
     public void controlPressed(char key){

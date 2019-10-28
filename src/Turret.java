@@ -2,25 +2,23 @@ import processing.core.*;
 
 
 public abstract class Turret extends Rotateable implements Drawable{
-    protected PApplet app;
     protected int speed;
     protected int fireDelay;
     protected int timmer;
-    Turret(PApplet app, int speed,int delay){
+    Turret(int speed,int delay){
         super(2,0);
-        this.app = app;
         this.speed = speed;
         fireDelay = delay;
     }
 
-    public void draw(){
+    public void draw(PApplet app){
         app.pushMatrix();
         app.rotate(app.radians(rotation));
-        drawTurret();
+        drawTurret(app);
         app.popMatrix();
     }
 
-    public abstract void drawTurret();
+    public abstract void drawTurret(PApplet app);
 
 
     public int getRotation(){

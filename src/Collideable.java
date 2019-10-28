@@ -1,6 +1,6 @@
 import java.math.*;
 public interface Collideable {
-    //TODO fix so that it's actually good
+    //TODO fix so that it accounts for angles.
     public static boolean isColliding(Point p1,Point size1,int rot1, Point p2,Point size2, int rot2){
         //|Distance| < total size
         float distanceX = Math.abs(p1.x-p2.x);

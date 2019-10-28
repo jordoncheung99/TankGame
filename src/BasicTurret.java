@@ -1,16 +1,18 @@
 import processing.core.PApplet;
+import java.lang.Math;
 public class BasicTurret extends Turret{
 
-    BasicTurret(PApplet app) {
-        super(app, 10,150);
+    BasicTurret() {
+        super(10,150);
     }
 
     @Override
-    public void drawTurret() {
+    public void drawTurret(PApplet app) {
         app.rect(0,0,20,20);
         app.translate(0,-25);
         app.rect(0,0,5,30);
     }
+
 
     @Override
     public Bullet fire(int rotation, float x, float y) {
@@ -20,9 +22,9 @@ public class BasicTurret extends Turret{
         }
          */
         timmer = fireDelay;
-        float dx = app.sin(app.radians(rotation))*speed;
-        float dy = -app.cos(app.radians(rotation))*speed;
-        return new Bullet((x+dx*3),(y+dy*3),dx,dy,app);
+        float dx = (float)Math.sin(Math.toRadians(rotation))*speed;
+        float dy = (float)-Math.cos(Math.toRadians(rotation))*speed;
+        return new Bullet((x+dx*3),(y+dy*3),dx,dy);
     }
 
     @Override

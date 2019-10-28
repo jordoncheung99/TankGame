@@ -26,22 +26,22 @@ public class Game extends PApplet {
     public void setup(){
         fill(120,50,240);
         rectMode(CENTER);
-        p1 = new Player(150,150,0,this, this);
+        p1 = new Player(150,150,0,this);
         bullets = new ArrayList<Bullet>();
         obsticles = new ArrayList<Obsticle>();
-        obsticles.add(new Obsticle(100,100,this));
+        obsticles.add(new Obsticle(100,100));
     }
 
     @Override
     public void draw(){
         update();
         background(0,0,0);
-        p1.draw();
+        p1.draw(this);
         for (int i =0; i < bullets.size(); i++){
-            bullets.get(i).draw();
+            bullets.get(i).draw(this);
         }
         for (int i = 0; i < obsticles.size(); i++){
-            obsticles.get(i).draw();
+            obsticles.get(i).draw(this);
         }
     }
 

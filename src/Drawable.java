@@ -1,3 +1,5 @@
+import processing.core.PApplet;
+
 public interface Drawable {
-    void draw();
+    void draw(PApplet applet);
 }

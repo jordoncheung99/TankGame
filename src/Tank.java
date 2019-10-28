@@ -10,19 +10,19 @@ public class Tank extends Rotateable implements Drawable,Collideable{
     PApplet app;
     private static final Point size = new Point(30,45);
     private static final int moveSpeed = 2;
-    public Tank(float x, float y, int deg,PApplet app){
+    public Tank(float x, float y, int deg){
         super(1,deg);
         origin = new Point(x,y);
         this.app = app;
-        turret = new BasicTurret(app);
+        turret = new BasicTurret();
     }
-    public void draw(){
+    public void draw(PApplet app){
         app.pushMatrix();
         app.translate(origin.x,origin.y);
         app.rotate(app.radians(rotation));
         turret.update();
-        drawTank();
-        turret.draw();
+        drawTank(app);
+        turret.draw(app);
         app.popMatrix();
     }
 
@@ -45,7 +45,7 @@ public class Tank extends Rotateable implements Drawable,Collideable{
 
     }
 
-    private void drawTank(){
+    private void drawTank(PApplet app){
         app.rect(0,0,size.x,size.y);
     }
 
