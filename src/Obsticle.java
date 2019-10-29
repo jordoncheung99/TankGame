@@ -1,11 +1,11 @@
 import processing.core.*;
 import java.lang.Math;
 public class Obsticle implements Drawable,Collideable{
-    Point orgin;
+    Point origin;
     Point size;
     int health;
     public Obsticle(int x, int y){
-        orgin = new Point(x,y);
+        origin = new Point(x,y);
         size = new Point(100,150);
         health = 100;
     }
@@ -21,7 +21,7 @@ public class Obsticle implements Drawable,Collideable{
 
     @Override
     public Point getOrigin() {
-        return orgin;
+        return origin;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class Obsticle implements Drawable,Collideable{
 
     @Override
     public void draw(PApplet app){
-        app.rect(orgin.x,orgin.y,size.x,size.y);
+        app.rect(origin.x,origin.y,size.x,size.y);
     }
 
 }
