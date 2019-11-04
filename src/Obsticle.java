@@ -52,6 +52,7 @@ public class Obsticle implements Drawable,Collideable{
 
     @Override
     public void draw(PApplet app){
+        app.fill(255-51*health,51*health,0);
         app.rect(origin.x,origin.y,size.x,size.y);
     }
 

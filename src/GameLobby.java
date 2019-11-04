@@ -19,9 +19,10 @@ public class GameLobby implements Runnable{
         tanks[1] = new Tank(350,ScreenConfig.SCREENY-offSet,0);
         tanks[2] = new Tank(offSet,350,90);
         tanks[3] = new Tank(ScreenConfig.SCREENX-offSet,350,270);
+        players = new Player[4];
         obsticles = generateObsticles();
 
-        players = new Player[4];
+
 
     }
 
@@ -47,11 +48,13 @@ public class GameLobby implements Runnable{
         for (int i =0; i < bullets.size(); i++){
             bullets.get(i).draw(app);
         }
-        for (int i = 0; i < obsticles.size(); i++){
-            obsticles.get(i).draw(app);
-        }
+
         for(int i = 0; i < 4; i++){
             tanks[i].draw(app);
+        }
+
+        for (int i = 0; i < obsticles.size(); i++){
+            obsticles.get(i).draw(app);
         }
     }
 
@@ -60,6 +63,9 @@ public class GameLobby implements Runnable{
         ArrayList<Collideable> collideables = new ArrayList<Collideable>();
         //Populate the linked list
         //The player's tanks
+        for(int i = 0; i < 4; i++){
+            collideables.add(tanks[i]);
+        }
         //Add the Obsticles
         for (int i = 0; i < obsticles.size(); i++){
             collideables.add(obsticles.get(i));
@@ -73,7 +79,6 @@ public class GameLobby implements Runnable{
         for (int i = 0; i < collideables.size(); i++){
             for (int j = i+1; j < collideables.size(); j++){
                 if (Collideable.isColliding(collideables.get(i),collideables.get(j))){
-                    System.out.println("Hit!");
                     int type1 = collideables.get(i).getType();
                     int type2 = collideables.get(j).getType();
                     if(type1 < type2){
@@ -93,11 +98,10 @@ public class GameLobby implements Runnable{
         }
     }
 
-    public void addNewPlayer(Player p, Tank t){
+    public void addNewPlayer(Player p){
         players[playerCount] = p;
-        tanks[playerCount] = t;
+        p.setTank(tanks[playerCount]);
         playerCount++;
-
     }
 
     @Override

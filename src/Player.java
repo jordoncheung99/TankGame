@@ -2,7 +2,7 @@ import processing.core.*;
 
 import java.util.ArrayList;
 
-public class Player extends PApplet implements Drawable{
+public class Player extends PApplet{
     Tank tank;
     GameLobby game;
     //W = 0, S = 1, A =2, D =3
@@ -16,14 +16,11 @@ public class Player extends PApplet implements Drawable{
     public Player(){
         game = new GameLobby();
         tank = new Tank(100,100,0);
-        game.addNewPlayer(this,tank);
+        game.addNewPlayer(this);
     }
 
-
-
-    public Player(float x, float y, int deg){
-        keyInputs = new boolean[7];
-        tank = new Tank(x,y,deg);
+    public void setTank(Tank t){
+        tank = t;
     }
 
     public void settings(){
@@ -33,7 +30,6 @@ public class Player extends PApplet implements Drawable{
     public void setup(){
         fill(120,50,240);
         rectMode(CENTER);
-        game = new GameLobby();
     }
 
     @Override
@@ -41,13 +37,9 @@ public class Player extends PApplet implements Drawable{
         game.update();
         background(0,0,0);
         game.draw(this);
-        draw(this);
+        update();
     }
 
-    public void draw(PApplet applet){
-        update();
-        tank.draw(applet);
-    }
 
     @Override
     public void keyPressed(){
@@ -94,7 +86,11 @@ public class Player extends PApplet implements Drawable{
         }
     }
 
+    boolean fired;
     private void update(){
+        if(!keyInputs[6]){
+            fired = false;
+        }
         //W
         if(keyInputs[0]){
             tank.forward();
@@ -120,8 +116,9 @@ public class Player extends PApplet implements Drawable{
             tank.turretTurnRight();
         }
         //' '
-        if (keyInputs[6]){
+        if (keyInputs[6] && !fired){
             game.spawnBullet(tank.fire());
+            fired = true;
         }
     }
 

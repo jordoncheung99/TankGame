@@ -8,13 +8,18 @@ public class Tank extends Rotateable implements Drawable,Collideable{
     private Point origin;
     private Turret turret;
     PApplet app;
-    private static final Point size = new Point(30,45);
-    private static final int moveSpeed = 2;
+    private static final Point size = new Point(25,40);
+    private static final int moveSpeed = 1;
+    int health;
+    boolean destoryFlag;
+
     public Tank(float x, float y, int deg){
         super(1,deg);
         origin = new Point(x,y);
         this.app = app;
         turret = new BasicTurret();
+        health = 3;
+        destoryFlag = false;
     }
     public void draw(PApplet app){
         app.pushMatrix();
@@ -41,11 +46,18 @@ public class Tank extends Rotateable implements Drawable,Collideable{
     }
 
     @Override
-    public void collide(int Type) {
-
+    public void collide(int HitType) {
+        if(HitType == 1){
+            health--;
+            if (health <= 0){
+                System.out.println("boom!");
+                destoryFlag = true;
+            }
+        }
     }
 
     private void drawTank(PApplet app){
+        app.fill(255-health*115,0,health*115);
         app.rect(0,0,size.x,size.y);
     }
 
@@ -77,7 +89,7 @@ public class Tank extends Rotateable implements Drawable,Collideable{
     }
 
     public void backward(){
-        move(false);
+        //move(false);
     }
 
     private void move(boolean isForward){
@@ -89,7 +101,18 @@ public class Tank extends Rotateable implements Drawable,Collideable{
             origin.x -= app.sin(app.radians(rotation)) * moveSpeed;
             origin.y += app.cos(app.radians(rotation)) * moveSpeed;
         }
-
+        if(origin.x < 0){
+            origin.x = 0;
+        }
+        if (origin.x > ScreenConfig.SCREENX){
+            origin.x = ScreenConfig.SCREENX;
+        }
+        if(origin.y < 0){
+            origin.y = 0;
+        }
+        if (origin.y > ScreenConfig.SCREENY){
+            origin.y = ScreenConfig.SCREENY;
+        }
     }
 
     private static final int type = 0;
