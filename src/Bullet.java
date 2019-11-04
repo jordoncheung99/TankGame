@@ -48,4 +48,10 @@ public class Bullet implements Drawable, Collideable{
     public void collide(int Type) {
         destoryFlag = true;
     }
+
+    private static final int type = 1;
+    @Override
+    public int getType(){
+        return type;
+    }
 }

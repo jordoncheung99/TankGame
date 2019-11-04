@@ -19,8 +19,12 @@ public interface Collideable {
 
     public int getRotation();
 
+    public int getType();
+
     public Point getOrigin();
     //TODO use an enum to do the type
+    //0 = Not bullet
+    //1 = Bullet
     public void collide(int Type);
 
 

@@ -1,13 +1,6 @@
 import processing.core.PApplet;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.net.SocketException;
 
 public class GameLobby implements Runnable{
 
@@ -19,27 +12,31 @@ public class GameLobby implements Runnable{
 
     public GameLobby(){
         bullets = new ArrayList<Bullet>();
-        obsticles = new ArrayList<Obsticle>();
-        obsticles.add(new Obsticle(100,100));
+        //Generate Obsticles
         tanks = new Tank[4];
+        int offSet = 20;
+        tanks[0] = new Tank(350,offSet,180);
+        tanks[1] = new Tank(350,ScreenConfig.SCREENY-offSet,0);
+        tanks[2] = new Tank(offSet,350,90);
+        tanks[3] = new Tank(ScreenConfig.SCREENX-offSet,350,270);
+        obsticles = generateObsticles();
+
         players = new Player[4];
-        tanks[0] = new Tank(100,100,0);
+
     }
 
-    public GameLobby(Socket s){
-        bullets = new ArrayList<Bullet>();
-        obsticles = new ArrayList<Obsticle>();
-        obsticles.add(new Obsticle(100,100));
-        tanks = new Tank[4];
-        players = new Player[4];
-        tanks[0] = new Tank(100,100,0);
-    }
 
     public void update(){
         for (int i =0; i < bullets.size(); i++){
             bullets.get(i).update();
             if(bullets.get(i).destoryFlag){
                 bullets.remove(i);
+                i--;
+            }
+        }
+        for(int i = 0; i < obsticles.size(); i++){
+            if(obsticles.get(i).destroyFlag){
+                obsticles.remove(i);
                 i--;
             }
         }
@@ -52,6 +49,9 @@ public class GameLobby implements Runnable{
         }
         for (int i = 0; i < obsticles.size(); i++){
             obsticles.get(i).draw(app);
+        }
+        for(int i = 0; i < 4; i++){
+            tanks[i].draw(app);
         }
     }
 
@@ -74,8 +74,13 @@ public class GameLobby implements Runnable{
             for (int j = i+1; j < collideables.size(); j++){
                 if (Collideable.isColliding(collideables.get(i),collideables.get(j))){
                     System.out.println("Hit!");
-                    collideables.get(i).collide(0);
-                    collideables.get(j).collide(0);
+                    int type1 = collideables.get(i).getType();
+                    int type2 = collideables.get(j).getType();
+                    if(type1 < type2){
+                        type1 = type2;
+                    }
+                    collideables.get(i).collide(type1);
+                    collideables.get(j).collide(type1);
                 }
             }
         }
@@ -98,5 +103,54 @@ public class GameLobby implements Runnable{
     @Override
     public void run() {
 
+    }
+
+    private static final int maxOb = 50;
+    private static final int minOb = 20;
+    private ArrayList<Obsticle> generateObsticles(){
+        ArrayList<Obsticle> obsticles = new ArrayList<>();
+        int numObsticles = (int)(Math.random() *(maxOb - minOb + 1)) + minOb;
+        //For collision checking
+        ArrayList<Collideable> collideables = new ArrayList<Collideable>();
+        //TODO add tanks to check
+        for(int i = 0; i < 4 ; i++){
+            collideables.add(tanks[i]);
+        }
+
+
+        for(int i = 0; i < numObsticles; i++){
+            Obsticle temp = genObsticle(collideables);
+            if (temp != null){
+                obsticles.add(temp);
+                collideables.add(temp);
+            }
+        }
+        return obsticles;
+    }
+
+    private Obsticle genObsticle(ArrayList<Collideable> collideables){
+        int timeOut = 20;
+        Obsticle temp;
+        for(int i = 0; i <timeOut; i++){
+            int x = (int)(Math.random() * (ScreenConfig.SCREENX + 1));
+            int y = (int)(Math.random() * (ScreenConfig.SCREENY + 1));
+            int sizeX = (int)(Math.random() * (Obsticle.maxSizeX- Obsticle.minSizeX + 1)) + Obsticle.minSizeX;
+            int sizeY = (int)(Math.random() * (Obsticle.maxSizeY- Obsticle.minSizeY + 1)) + Obsticle.minSizeY;
+            temp = new Obsticle(x,y,sizeX,sizeY);
+            collideables.add(temp);
+            //Collision Check
+            boolean valid = true;
+            for (int j = 0; j < collideables.size()-1; j++){
+                if (Collideable.isColliding(collideables.get(j),collideables.get(collideables.size()-1))){
+                    valid = false;
+                    collideables.remove(collideables.size()-1);
+                    break;
+                }
+            }
+            if (valid){
+                return temp;
+            }
+        }
+        return  null;
     }
 }

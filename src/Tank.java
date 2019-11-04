@@ -92,6 +92,10 @@ public class Tank extends Rotateable implements Drawable,Collideable{
 
     }
 
-
+    private static final int type = 0;
+    @Override
+    public int getType(){
+        return type;
+    }
 
 }

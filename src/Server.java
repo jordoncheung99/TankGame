@@ -26,7 +26,7 @@ class Server implements Runnable{
     public void commuicateWtihClient() throws IOException{
         try {
             while(true) {
-                pool.execute(new GameLobby(serverSocket.accept()));
+                //pool.execute(new GameLobby(serverSocket.accept()));
                 System.out.println("Connected to ShopOwner");
             }
         }catch(Exception e) {
