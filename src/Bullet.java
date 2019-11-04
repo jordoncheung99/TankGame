@@ -6,8 +6,8 @@ public class Bullet implements Drawable, Collideable{
     protected boolean destoryFlag = false;
 
 
-    private static final int sizeX = 5;
-    private static final int sizeY = 5;
+    private static final int sizeX = 8;
+    private static final int sizeY = 8;
     public Bullet(float x, float y, float dx, float dy){
         dimentions = new Dimention(x,y, sizeX, sizeY);
         deltaMovement = new Point(dx,dy);
@@ -24,6 +24,7 @@ public class Bullet implements Drawable, Collideable{
 
     @Override
     public void draw(PApplet applet){
+        applet.fill(255,0,0);
         applet.ellipse(dimentions.position.x,dimentions.position.y,dimentions.size.x,dimentions.size.y);
     }
 

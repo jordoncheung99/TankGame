@@ -12,7 +12,6 @@ public class GameLobby implements Runnable{
 
     public GameLobby(){
         bullets = new ArrayList<Bullet>();
-        //Generate Obsticles
         tanks = new Tank[4];
         int offSet = 20;
         tanks[0] = new Tank(350,offSet,180);
@@ -20,6 +19,8 @@ public class GameLobby implements Runnable{
         tanks[2] = new Tank(offSet,350,90);
         tanks[3] = new Tank(ScreenConfig.SCREENX-offSet,350,270);
         players = new Player[4];
+        //Generate Obsticles
+//        obsticles = new ArrayList<>();
         obsticles = generateObsticles();
 
 
@@ -58,14 +59,17 @@ public class GameLobby implements Runnable{
         }
     }
 
+
     private void collide(){
         //TODO find a better way of having this linked list
         ArrayList<Collideable> collideables = new ArrayList<Collideable>();
+
         //Populate the linked list
-        //The player's tanks
+//        //The player's tanks
         for(int i = 0; i < 4; i++){
             collideables.add(tanks[i]);
         }
+
         //Add the Obsticles
         for (int i = 0; i < obsticles.size(); i++){
             collideables.add(obsticles.get(i));
