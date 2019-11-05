@@ -10,7 +10,7 @@ public class Obsticle implements Drawable,Collideable{
     public static final int maxSizeY = 100;
     public static final int minSizeX = 20;
     public static final int minSizeY = 20;
-    private static final int maxHealth = 5;
+    private static final int maxHealth = 2;
 
     public Obsticle(int x, int y){
         origin = new Point(x,y);
@@ -52,7 +52,7 @@ public class Obsticle implements Drawable,Collideable{
 
     @Override
     public void draw(PApplet app){
-        app.fill(255-51*health,51*health,0);
+        app.fill(255-125*health,125*health,0);
         app.rect(origin.x,origin.y,size.x,size.y);
     }
 

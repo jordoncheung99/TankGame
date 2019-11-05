@@ -6,8 +6,8 @@ public class Bullet implements Drawable, Collideable{
     protected boolean destoryFlag = false;
 
 
-    private static final int sizeX = 8;
-    private static final int sizeY = 8;
+    private static final int sizeX = 7;
+    private static final int sizeY = 7;
     public Bullet(float x, float y, float dx, float dy){
         dimentions = new Dimention(x,y, sizeX, sizeY);
         deltaMovement = new Point(dx,dy);

@@ -1,29 +1,29 @@
 import processing.core.PApplet;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class GameLobby implements Runnable{
 
     ArrayList<Bullet> bullets;
     ArrayList<Obsticle> obsticles;
-    Tank[] tanks;
-    Player[] players;
+    LinkedList<Text> texts;
+    ArrayList<Tank> tanks;
+    ArrayList<Player> players;
     int playerCount = 0;
 
     public GameLobby(){
         bullets = new ArrayList<Bullet>();
-        tanks = new Tank[4];
+        tanks = new ArrayList<>();
         int offSet = 20;
-        tanks[0] = new Tank(350,offSet,180);
-        tanks[1] = new Tank(350,ScreenConfig.SCREENY-offSet,0);
-        tanks[2] = new Tank(offSet,350,90);
-        tanks[3] = new Tank(ScreenConfig.SCREENX-offSet,350,270);
-        players = new Player[4];
+        tanks.add( new Tank(350,offSet,180));
+        tanks.add(new Tank(350,ScreenConfig.SCREENY-offSet,0));
+        tanks.add( new Tank(offSet,350,90));
+        tanks.add(new Tank(ScreenConfig.SCREENX-offSet,350,270));
+        players = new ArrayList<>(4);
         //Generate Obsticles
-//        obsticles = new ArrayList<>();
         obsticles = generateObsticles();
-
-
+        texts = new LinkedList<>();
 
     }
 
@@ -42,6 +42,24 @@ public class GameLobby implements Runnable{
                 i--;
             }
         }
+
+        for(int i = 0; i < texts.size(); i++){
+            Text temp = texts.get(i);
+            temp.timeout++;
+            if(temp.timeout >= temp.maxTimeOut){
+                texts.remove(i);
+                i--;
+            }
+        }
+
+        for(int i = 0; i < tanks.size(); i++){
+            Tank tank = tanks.get(i);
+            if(tank.health<=0){
+                tanks.remove(i);
+                i--;
+            }
+        }
+
         collide();
     }
 
@@ -50,13 +68,20 @@ public class GameLobby implements Runnable{
             bullets.get(i).draw(app);
         }
 
-        for(int i = 0; i < 4; i++){
-            tanks[i].draw(app);
+        for(int i = 0; i < tanks.size(); i++){
+            tanks.get(i).draw(app);
         }
 
         for (int i = 0; i < obsticles.size(); i++){
             obsticles.get(i).draw(app);
         }
+
+        for(int i = 0; i < texts.size(); i++){
+            app.fill(255);
+            Text text = texts.get(i);
+            app.text(text.text, text.origin.x, text.origin.y);
+        }
+
     }
 
 
@@ -66,8 +91,8 @@ public class GameLobby implements Runnable{
 
         //Populate the linked list
 //        //The player's tanks
-        for(int i = 0; i < 4; i++){
-            collideables.add(tanks[i]);
+        for(int i = 0; i < tanks.size(); i++){
+            collideables.add(tanks.get(i));
         }
 
         //Add the Obsticles
@@ -103,8 +128,8 @@ public class GameLobby implements Runnable{
     }
 
     public void addNewPlayer(Player p){
-        players[playerCount] = p;
-        p.setTank(tanks[playerCount]);
+        players.add(p);
+        p.setTank(tanks.get(playerCount));
         playerCount++;
     }
 
@@ -121,8 +146,8 @@ public class GameLobby implements Runnable{
         //For collision checking
         ArrayList<Collideable> collideables = new ArrayList<Collideable>();
         //TODO add tanks to check
-        for(int i = 0; i < 4 ; i++){
-            collideables.add(tanks[i]);
+        for(int i = 0; i < tanks.size() ; i++){
+            collideables.add(tanks.get(i));
         }
 
 
@@ -160,5 +185,9 @@ public class GameLobby implements Runnable{
             }
         }
         return  null;
+    }
+
+    public void addText(String text, Point origin){
+        texts.add(new Text(text,origin));
     }
 }

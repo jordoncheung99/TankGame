@@ -1,13 +1,14 @@
 import processing.core.*;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 public class Player extends PApplet{
     Tank tank;
     GameLobby game;
     //W = 0, S = 1, A =2, D =3
-    //J = 4, K = 5 ' ' = 6
-    boolean[] keyInputs = {false,false,false,false,false,false,false};
+    //J = 4, K = 5 ' ' = 6 T = 7
+    boolean[] keyInputs = {false,false,false,false,false,false,false,false};
 
     public static void main(String[] args){
         PApplet.main("Player");
@@ -30,6 +31,7 @@ public class Player extends PApplet{
     public void setup(){
         fill(120,50,240);
         rectMode(CENTER);
+        textSize(25);
     }
 
     @Override
@@ -83,11 +85,18 @@ public class Player extends PApplet{
             case ' ':
                 keyInputs[6] = pressed;
                 break;
+            case 't':
+                keyInputs[7] = pressed;
+                break;
         }
     }
 
     boolean fired;
+    boolean talked;
     private void update(){
+        if(!keyInputs[7]){
+            talked = false;
+        }
         if(!keyInputs[6]){
             fired = false;
         }
@@ -120,10 +129,28 @@ public class Player extends PApplet{
             game.spawnBullet(tank.fire());
             fired = true;
         }
+
+        if(keyInputs[7] && !talked){
+            talk();
+            talked = true;
+        }
     }
 
     public Tank getTank(){
         return tank;
     }
+
+    public void talk(){
+        System.out.println("talking");
+        //JOptionPane.showMessageDialog(null, "java is fun");
+        String s = JOptionPane.showInputDialog("What is your message");
+        if(s.contains("/")){
+            System.out.println("A command should be happening");
+        }else{
+            game.addText(s,tank.getOrigin());
+        }
+
+    }
+
 
 }
