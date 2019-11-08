@@ -100,7 +100,7 @@ class Client {
                         bw2.write(line + "\n");
                         bw2.close();
                         while(logged_in){
-                            System.out.println("type /gameroom join OR online/logout");
+                            System.out.println("type /gameroom join OR /users Or logout");
                             line3 = gameInput.readLine();
                             if (line3.contains("/gameroom join")){
                                 //launch the game here
