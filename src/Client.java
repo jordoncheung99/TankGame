@@ -19,6 +19,8 @@ class Client {
             System.exit(1);
         }
 
+        //Player aPlayer = new Player();
+
         // Initialize a client socket connection to the server
         Socket clientSocket = new Socket(args[0], Integer.parseInt(args[1]));
 
@@ -29,9 +31,10 @@ class Client {
                 new BufferedReader(new
                         InputStreamReader(clientSocket.getInputStream()));
 
+
         //----------Usernames--------------------------------
         String userName = "";
-        File file = new File("usernames.txt");
+        File file = new File("Usernames.txt");
         Scanner s = new Scanner(file);
         ArrayList<String> userArray = new ArrayList<String>();
         while (s.hasNext()){
@@ -40,17 +43,40 @@ class Client {
         }
         s.close();
         //System.out.println(userArray.get(2));
+        /*
+        for (int i = 0; i<userArray.size();i++){
+            System.out.println(userArray.get(i));
+        }
+        */
 
-        //-----------------------------------------------
-        // Initialize user input stream
+        //*------logged-in users----------------------------------
+        String logged_in_users = "";
+        File log_file = new File("loggedIn.txt");
+        ArrayList<String> loggedUsersArray = new ArrayList<String>();
+
+        /*
+         * Initialize user input stream
+         * For usernames
+         */
         FileWriter fw = new FileWriter(file,true);
         BufferedWriter bw = new BufferedWriter(fw);
         //bw.write("fuk this");
         //bw.close();
-        String line;
+
+        /*
+         * For logged in users
+         */
+        FileWriter fw2 = new FileWriter(log_file,true);
+        BufferedWriter bw2 = new BufferedWriter(fw2);
+
+
+        String line,line2,line3;
+        boolean logged_in;
         BufferedReader inFromUser =
                 new BufferedReader(new InputStreamReader(System.in));
         BufferedReader nameInput =
+                new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader gameInput =
                 new BufferedReader(new InputStreamReader(System.in));
 
         // Get user input and send to the server
@@ -60,18 +86,58 @@ class Client {
         while (!line.equals("exit"))
         {
             // Send to the server
-            outBuffer.writeBytes(line + '\n');
+            //outBuffer.writeBytes(line + '\n');
             //if the input is list then list all the files in current directory
             if (line.equals("login")){
                 System.out.println("Enter login Username: ");
-                line = nameInput.readLine();
-                boolean isUser = userArray.contains(line);
-                if(isUser){
-                    System.out.println("Welcome:" + line);
+                while (!line.equals("logout")){
+                    line = nameInput.readLine();
+                    boolean isUser = userArray.contains(line);
+                    if(isUser){
+                        logged_in = true;
+                        System.out.println("Welcome:" + line);
+                        loggedUsersArray.add(line);
+                        bw2.write(line + "\n");
+                        bw2.close();
+                        while(logged_in){
+                            System.out.println("type /gameroom join OR online/logout");
+                            line3 = gameInput.readLine();
+                            if (line3.contains("/gameroom join")){
+                                //launch the game here
+                                System.out.println("Starting game now");
+                            }
+                            if (line3.equals("logout")){
+                                logged_in = false;
+                                line = "logout";
+                            }
+                            if(line3.equals("/users")){
+                                Scanner s2 = new Scanner(log_file);
+                                while (s2.hasNext()){
+                                    logged_in_users = s2.next();
+                                    loggedUsersArray.add(logged_in_users);
+                                }
+                                s2.close();
+                                for (int i = 0; i<loggedUsersArray.size()-1;i++){
+                                    String online_users = loggedUsersArray.get(i);
+                                    outBuffer.writeBytes(online_users + '\n');
+                                    System.out.println(online_users);
+                                    //loggedUsersArray.remove(i);
+                                }
+                            }
+                            else{
+                                //System.out.println("Unknown command");
+                            }
+                        }
+
+                        //launch the game here
+                    }
+                    else{
+                        System.out.println("Can't find username: " + line);
+                        break;
+                    }
+                    //take out logged in name here
                 }
-                else{
-                    System.out.println("Can't find username: " + line);
-                }
+                //bw2.close();
             }
             else if (line.equals("register")){
                 // BufferedWriter bw = new BufferedWriter(fw);
@@ -80,7 +146,7 @@ class Client {
                 System.out.println("New User:" + line);
                 userArray.add(line);
                 bw.write(line + "\n");
-                //bw.close();
+                bw.close();
 
             }
 
@@ -93,7 +159,8 @@ class Client {
             line = inFromUser.readLine();
 
         }
-        bw.close();
+        //bw.close();
+        //bw2.close();
         // Close the socket
         clientSocket.close();
     }
