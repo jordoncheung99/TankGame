@@ -4,12 +4,6 @@
  * Instructor: Prof. Mea Wang
  */
 
-
-//change the accept connection thing from this side
-//create a gameroom
-//List: currentplayers, gamerooms,
-
-
 import java.io.*;
 import java.net.*;
 import java.nio.*;
@@ -18,7 +12,6 @@ import java.nio.charset.*;
 import java.util.*;
 
 public class Server {
-    String line;
     public static int BUFFERSIZE = 32;
     public static void main(String args[]) throws Exception
     {
@@ -41,24 +34,27 @@ public class Server {
         Selector selector = Selector.open();
 
         // Create a server channel and make it non-blocking
-        // Make the tcp channel non-blocking
-        //changed the original variable to tcp_channel from just channel
-        ServerSocketChannel tcp_channel = ServerSocketChannel.open();
-        tcp_channel.configureBlocking(false);
+        ServerSocketChannel channel = ServerSocketChannel.open();
+        channel.configureBlocking(false);
 
         // Get the port number and bind the socket
         InetSocketAddress isa = new InetSocketAddress(Integer.parseInt(args[0]));
-        tcp_channel.socket().bind(isa);
+        channel.socket().bind(isa);
 
         // Register that the server selector is interested in connection requests
-        tcp_channel.register(selector, SelectionKey.OP_ACCEPT);
+        channel.register(selector, SelectionKey.OP_ACCEPT);
 
-        //UDP channel initialization - do it the same as above
-        // Declare a UDP server socket and a datagram packet
-        DatagramChannel udp_channel = DatagramChannel.open();
-        udp_channel.configureBlocking(false);
-        udp_channel.socket().bind(isa);
-        udp_channel.register(selector, SelectionKey.OP_READ);	//accept wont work..read only
+        //-------stuff here--------------------------------------------------
+        String userName = "";
+        String logged_in_users = "";
+        File log_file = new File("loggedIn.txt");
+        ArrayList<String> loggedInUsersArray = new ArrayList<String>();
+
+        /*
+         * For logged in users
+         */
+        FileWriter fw = new FileWriter(log_file,true);
+        BufferedWriter bw = new BufferedWriter(fw);
 
         // Wait for something happen among all registered sockets
         try {
@@ -97,101 +93,88 @@ public class Server {
                     }
                     else
                     {
-                        //check if UDP first - initialize select channel
-                        SelectableChannel schannel = key.channel();
-                        //if this channel belongs to UDP channel
-                        if (schannel instanceof DatagramChannel)
+                        SocketChannel cchannel = (SocketChannel)key.channel();
+                        if (key.isReadable())
                         {
-                            //do it same way as TCP
-                            DatagramChannel dchannel = (DatagramChannel)schannel;
-                            if (key.isReadable())
+                            Socket socket = cchannel.socket();
+
+                            // Open input and output streams
+                            inBuffer = ByteBuffer.allocateDirect(BUFFERSIZE);
+                            cBuffer = CharBuffer.allocate(BUFFERSIZE);
+
+                            // Read from socket
+                            bytesRecv = cchannel.read(inBuffer);
+                            if (bytesRecv <= 0)
                             {
-
-                                // Open input and output streams
-                                inBuffer = ByteBuffer.allocateDirect(BUFFERSIZE);
-                                cBuffer = CharBuffer.allocate(BUFFERSIZE);
-
-                                // Read from socket
-                                //take address of UDP socket and check if its null
-                                SocketAddress data_addr = dchannel.receive(inBuffer);
-                                if (data_addr == null)
-                                {
-                                    System.out.println("read() error, or connection closed");
-                                    key.cancel();  // deregister the socket
-                                    continue;
-                                }
-
-                                inBuffer.flip();      // make buffer available
-                                decoder.decode(inBuffer, cBuffer, false);
-                                cBuffer.flip();
-                                line = cBuffer.toString();
-                                System.out.print("UDP Client: " + line + "\n");
-
-                                // Echo the message back
-                                inBuffer.flip();
-                                bytesRecv = line.length();
-                                bytesSent = dchannel.send(inBuffer,data_addr); //send the message - not write
-                                if (bytesSent != bytesRecv)
-                                {
-                                    System.out.println("write() error, or connection closed");
-                                    key.cancel();  // deregister the socket
-                                    continue;
-                                }
-
-                                if (line.equals("terminate") || line.equals("logout")){
-                                    terminated = true;
-                                }
+                                System.out.println("read() error, or connection closed");
+                                key.cancel();  // deregister the socket
+                                continue;
                             }
 
-                        }
-                        else
-                        {
-                            SocketChannel cchannel = (SocketChannel)key.channel();
-                            if (key.isReadable())
-                            {
-                                Socket socket = cchannel.socket();
-
-                                // Open input and output streams
-                                inBuffer = ByteBuffer.allocateDirect(BUFFERSIZE);
-                                cBuffer = CharBuffer.allocate(BUFFERSIZE);
-
-                                // Read from socket
-                                bytesRecv = cchannel.read(inBuffer);
-                                if (bytesRecv <= 0)
-                                {
-                                    System.out.println("read() error, or connection closed");
-                                    key.cancel();  // deregister the socket
-                                    continue;
-                                }
-
-                                inBuffer.flip();      // make buffer available
-                                decoder.decode(inBuffer, cBuffer, false);
-                                cBuffer.flip();
-                                line = cBuffer.toString();
-                                System.out.print(line);
-
-                                // Echo the message back
-                                inBuffer.flip();
-                                bytesSent = cchannel.write(inBuffer);
-                                if (bytesSent != bytesRecv)
-                                {
-                                    System.out.println("write() error, or connection closed");
-                                    key.cancel();  // deregister the socket
-                                    continue;
-                                }
-
-                                if (line.equals("terminate") || line.equals("logout"))
-                                {
-                                    terminated = true;
-                                }
+                            inBuffer.flip();      // make buffer available
+                            decoder.decode(inBuffer, cBuffer, false);
+                            cBuffer.flip();
+                            line = cBuffer.toString();
+                            System.out.print(line);
+                            /*command plus the username as one line then just take out the command resulting in
+                              just the username
+                            */
+                            if(line.contains("login")){
+                                userName = line.replace("login","");
+                                loggedInUsersArray.add(userName);
+                                System.out.println("Username:" + userName);
+                                bw.write(userName);
+                                bw.flush();
+                                //bw.close();
                             }
+                            /*
+                            Get the command from the client then pull out the database of logged in users
+                            for the client to see
+                            */
+                            else if(line.contains("/users")){
+                                Scanner s2 = new Scanner(log_file);
+                                while (s2.hasNext()){
+                                    logged_in_users = s2.next();
+                                    loggedInUsersArray.add(logged_in_users);
+                                }
+                                s2.close();
+                                for (int i = 0; i<loggedInUsersArray.size();i++){
+                                    String online_users = loggedInUsersArray.get(i);
+                                    System.out.println(online_users);
+                                    //loggedUsersArray.remove(i);
+                                }
+
+                            }
+
+                            // Echo the message back
+                            inBuffer.flip();
+                            bytesSent = cchannel.write(inBuffer);
+                            if (bytesSent != bytesRecv)
+                            {
+                                System.out.println("write() error, or connection closed");
+                                key.cancel();  // deregister the socket
+                                continue;
+                            }
+
+                            if (line.equals("terminate\n"))
+                                terminated = true;
                         }
+                        //bw.close();
                     }
+                    //bw.close();
                 } // end of while (readyItor.hasNext())
+                //bw.close();
             } // end of while (!terminated)
+            //bw.close();
         }
         catch (IOException e) {
             System.out.println(e);
+        }
+
+
+        finally {
+            bw.close();
+            System.out.println("Finished");
         }
 
         // close all connections

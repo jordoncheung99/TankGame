@@ -71,7 +71,7 @@ class Client {
 
 
         String line,line2,line3;
-        boolean logged_in;
+        boolean logged_in,isBanned;
         BufferedReader inFromUser =
                 new BufferedReader(new InputStreamReader(System.in));
         BufferedReader nameInput =
@@ -93,24 +93,35 @@ class Client {
                 while (!line.equals("logout")){
                     line = nameInput.readLine();
                     boolean isUser = userArray.contains(line);
+                    //check if its a registered user
                     if(isUser){
                         logged_in = true;
+                        isBanned = false;
+                        outBuffer.writeBytes("login" + line + '\n');    //send the command to the server and the server will take the username
                         System.out.println("Welcome:" + line);
                         loggedUsersArray.add(line);
-                        bw2.write(line + "\n");
-                        bw2.close();
+                        //bw2.write(line + "\n");
+                        //bw2.close();
                         while(logged_in){
-                            System.out.println("type /gameroom join OR /users Or logout");
+                            System.out.println("type /gameroom join OR /users OR logout");
                             line3 = gameInput.readLine();
-                            if (line3.contains("/gameroom join")){
+                            if (line3.contains(("/gameroom join")) && (!isBanned)) {
                                 //launch the game here
                                 System.out.println("Starting game now");
+                            }
+                            if (line3.contains(("/gameroom join")) && (isBanned)) {
+                                //launch the game here
+                                System.out.println("You are banned from the gameroom");
                             }
                             if (line3.equals("logout")){
                                 logged_in = false;
                                 line = "logout";
                             }
-                            if(line3.equals("/users")){
+                            /*
+                            Check if the line contains the command users then send that command to the server
+                            then the server which made the database for logged in users will print the list
+                            */
+                            if(line3.contains("/users")){
                                 Scanner s2 = new Scanner(log_file);
                                 while (s2.hasNext()){
                                     logged_in_users = s2.next();
@@ -119,10 +130,14 @@ class Client {
                                 s2.close();
                                 for (int i = 0; i<loggedUsersArray.size()-1;i++){
                                     String online_users = loggedUsersArray.get(i);
-                                    outBuffer.writeBytes(online_users + '\n');
                                     System.out.println(online_users);
                                     //loggedUsersArray.remove(i);
                                 }
+                            }
+                            if(line3.contains("/ban")){
+                                String bannedUser = line3.replace("/ban","");
+                                isBanned = true;
+
                             }
                             else{
                                 //System.out.println("Unknown command");
