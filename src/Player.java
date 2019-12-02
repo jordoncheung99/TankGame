@@ -144,8 +144,9 @@ public class Player extends PApplet{
         System.out.println("talking");
         //JOptionPane.showMessageDialog(null, "java is fun");
         String s = JOptionPane.showInputDialog("What is your message");
-        if(s.contains("/")){
-            System.out.println("A command should be happening");
+        if(s.contains("/ban")){
+            String bannedUser = s.replace("/ban","");
+            System.out.println("User banned");
         }else{
             game.addText(s,tank.getOrigin());
         }

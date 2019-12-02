@@ -49,6 +49,7 @@ public class Server {
         String logged_in_users = "";
         File log_file = new File("loggedIn.txt");
         ArrayList<String> loggedInUsersArray = new ArrayList<String>();
+        ArrayList<String> bannedUsersArray = new ArrayList<String>();
 
         /*
          * For logged in users
@@ -115,36 +116,7 @@ public class Server {
                             decoder.decode(inBuffer, cBuffer, false);
                             cBuffer.flip();
                             line = cBuffer.toString();
-                            System.out.print(line);
-                            /*command plus the username as one line then just take out the command resulting in
-                              just the username
-                            */
-                            if(line.contains("login")){
-                                userName = line.replace("login","");
-                                loggedInUsersArray.add(userName);
-                                System.out.println("Username:" + userName);
-                                bw.write(userName);
-                                bw.flush();
-                                //bw.close();
-                            }
-                            /*
-                            Get the command from the client then pull out the database of logged in users
-                            for the client to see
-                            */
-                            else if(line.contains("/users")){
-                                Scanner s2 = new Scanner(log_file);
-                                while (s2.hasNext()){
-                                    logged_in_users = s2.next();
-                                    loggedInUsersArray.add(logged_in_users);
-                                }
-                                s2.close();
-                                for (int i = 0; i<loggedInUsersArray.size();i++){
-                                    String online_users = loggedInUsersArray.get(i);
-                                    System.out.println(online_users);
-                                    //loggedUsersArray.remove(i);
-                                }
-
-                            }
+                            //System.out.print(line);
 
                             // Echo the message back
                             inBuffer.flip();
@@ -158,6 +130,35 @@ public class Server {
 
                             if (line.equals("terminate\n"))
                                 terminated = true;
+
+                            /*command plus the username as one line then just take out the command resulting in
+                              just the username
+                            */
+                            if(line.contains("login")){
+                                userName = line.replace("login","");
+                                loggedInUsersArray.add(userName + "\n");
+                                System.out.println("Logged in: " + userName);
+                                bw.write(userName);
+                                bw.flush();
+                                //bw.close();
+                            }
+                            /*
+                            Get the command from the client then pull out the database of logged in users
+                            for the client to see. Add it to the arraylist
+                            */
+                            if(line.contains("/users")){
+                                for (int i = 0; i<loggedInUsersArray.size();i++){
+                                    String online_users = loggedInUsersArray.get(i);
+                                    System.out.println(online_users);
+                                    //loggedUsersArray.remove(i);
+                                    //send to client the online user list
+                                }
+                            }
+                            if(line.contains("/ban")){
+                                String bannedUser = line.replace("/ban","");
+                                bannedUsersArray.add(bannedUser);
+                                //send to clients the banned usernames
+                            }
                         }
                         //bw.close();
                     }
@@ -174,7 +175,6 @@ public class Server {
 
         finally {
             bw.close();
-            System.out.println("Finished");
         }
 
         // close all connections

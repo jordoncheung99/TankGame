@@ -12,6 +12,7 @@ public class Tank extends Rotateable implements Drawable,Collideable{
     private static final int moveSpeed = 1;
     int health;
     boolean destoryFlag;
+    int kills = 0;
 
     public Tank(float x, float y, int deg){
         super(1,deg);
@@ -52,6 +53,8 @@ public class Tank extends Rotateable implements Drawable,Collideable{
             if (health <= 0){
                 System.out.println("boom!");
                 destoryFlag = true;
+                kills++;
+                System.out.println("# of kills:" + kills);
             }
         }
     }

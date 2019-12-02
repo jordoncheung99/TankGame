@@ -97,7 +97,7 @@ class Client {
                     if(isUser){
                         logged_in = true;
                         isBanned = false;
-                        outBuffer.writeBytes("login" + line + '\n');    //send the command to the server and the server will take the username
+                        outBuffer.writeBytes("login" + line);    //send the command to the server and the server will take the username
                         System.out.println("Welcome:" + line);
                         loggedUsersArray.add(line);
                         //bw2.write(line + "\n");
@@ -121,7 +121,8 @@ class Client {
                             Check if the line contains the command users then send that command to the server
                             then the server which made the database for logged in users will print the list
                             */
-                            if(line3.contains("/users")){
+                            if(line3.equals("/users")){
+                                outBuffer.writeBytes("/users");
                                 Scanner s2 = new Scanner(log_file);
                                 while (s2.hasNext()){
                                     logged_in_users = s2.next();
